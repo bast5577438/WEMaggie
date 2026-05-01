@@ -1,0 +1,1399 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🎂 WE Maggie — Jaujac 2026</title>
+
+<!--
+  Polices Google Fonts :
+  - Playfair Display : serif élégant pour les titres (card-title, section-title)
+  - DM Sans : sans-serif moderne pour le corps de texte et les boutons
+-->
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  /* =========================================================
+     VARIABLES CSS — Palette de couleurs & tokens de design
+     Modifier ces valeurs change le thème sur l'ensemble du site.
+     ========================================================= */
+  :root {
+    --rose:#e8847a;           /* Rose principal (accents, highlights) */
+    --rose-light:#f5c5c0;     /* Rose pâle (chips sélectionnés, hovers) */
+    --rose-deep:#c4564a;      /* Rose foncé (textes actifs, boutons primaires) */
+    --sage:#7a9e8e;           /* Vert sauge (prix, badges secondaires) */
+    --sage-light:#b8d4c8;     /* Vert sauge clair */
+    --cream:#fdf6ee;          /* Fond général crème chaud */
+    --warm:#f0e6d6;           /* Fond des cartes légères, séparateurs */
+    --text:#2d2420;           /* Texte principal quasi-noir */
+    --text-soft:#7a6560;      /* Texte secondaire / labels */
+    --gold:#c9a84c;           /* Or (cadeau Maggie, accents spéciaux) */
+    --shadow:0 4px 24px rgba(45,36,32,.10); /* Ombre portée standardisée */
+    --radius:16px;            /* Arrondi des coins des cartes */
+  }
+
+  /* Reset minimal */
+  *{box-sizing:border-box;margin:0;padding:0;}
+
+  body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);min-height:100vh;}
+
+  /* =========================================================
+     EN-TÊTE (HEADER)
+     Fond dégradé rose. Les ::before et ::after créent deux
+     cercles décoratifs flous en arrière-plan.
+     ========================================================= */
+  header{background:linear-gradient(135deg,var(--rose-deep) 0%,var(--rose) 50%,#e8a89d 100%);color:white;padding:40px 24px 32px;text-align:center;position:relative;overflow:hidden;}
+
+  /* Cercle décoratif en haut à droite */
+  header::before{content:'';position:absolute;top:-40px;right:-40px;width:200px;height:200px;background:rgba(255,255,255,.08);border-radius:50%;}
+
+  /* Cercle décoratif en bas à gauche */
+  header::after{content:'';position:absolute;bottom:-60px;left:-30px;width:180px;height:180px;background:rgba(255,255,255,.06);border-radius:50%;}
+
+  header h1{font-family:'Playfair Display',serif;font-size:clamp(28px,6vw,44px);font-weight:700;letter-spacing:-.5px;position:relative;}
+  header .subtitle{font-size:15px;opacity:.88;margin-top:6px;font-weight:300;letter-spacing:.5px;position:relative;}
+
+  /* Badge des dates (style "pill" semi-transparent) */
+  header .dates-badge{display:inline-block;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.3);padding:6px 18px;border-radius:40px;font-size:13px;font-weight:500;margin-top:14px;position:relative;}
+
+  /* =========================================================
+     NAVIGATION PAR ONGLETS (sticky)
+     Barre scrollable horizontalement sur mobile (overflow-x:auto).
+     scrollbar-width:none masque la scrollbar sur Firefox.
+     ========================================================= */
+  .nav{background:white;display:flex;overflow-x:auto;border-bottom:2px solid var(--warm);scrollbar-width:none;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,.06);}
+  .nav::-webkit-scrollbar{display:none;} /* Masque la scrollbar sur Chrome/Safari */
+
+  /* Bouton d'onglet individuel */
+  .nav button{flex:none;padding:14px 18px;border:none;background:none;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;color:var(--text-soft);cursor:pointer;white-space:nowrap;border-bottom:3px solid transparent;margin-bottom:-2px;transition:all .2s;}
+
+  /* Onglet actif : soulignement rose foncé */
+  .nav button.active{color:var(--rose-deep);border-bottom-color:var(--rose-deep);font-weight:600;}
+  .nav button:hover:not(.active){color:var(--text);background:var(--cream);}
+
+  /* =========================================================
+     ZONE DE CONTENU PRINCIPALE
+     ========================================================= */
+  .content{max-width:900px;margin:0 auto;padding:24px 16px 80px;}
+
+  /* Chaque onglet est masqué par défaut ; seul celui avec .active est visible */
+  .tab-panel{display:none;}
+  .tab-panel.active{display:block;}
+
+  /* =========================================================
+     COMPOSANTS GÉNÉRIQUES : CARD, TITRES, SÉPARATEURS
+     ========================================================= */
+  .card{background:white;border-radius:var(--radius);padding:20px;margin-bottom:16px;box-shadow:var(--shadow);border:1px solid rgba(0,0,0,.04);}
+  .card-title{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--rose-deep);margin-bottom:4px;}
+  .card-sub{font-size:12px;color:var(--text-soft);margin-bottom:16px;}
+  .section-title{font-family:'Playfair Display',serif;font-size:22px;color:var(--text);margin-bottom:6px;font-weight:700;}
+  .section-desc{font-size:13px;color:var(--text-soft);margin-bottom:20px;}
+  .section-label{font-size:11px;color:var(--text-soft);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;}
+  .divider{height:1px;background:var(--warm);margin:14px 0;}
+
+  /* =========================================================
+     ONGLET PARTICIPANTES
+     Grille auto-responsive de cartes dépliables (accordion).
+     ========================================================= */
+  .participantes-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;}
+
+  /* Carte d'une participante — la classe .expanded est ajoutée par JS au clic */
+  .participante-card{background:white;border-radius:var(--radius);padding:18px;box-shadow:var(--shadow);border:2px solid transparent;transition:all .2s;position:relative;}
+  .participante-card:hover{border-color:var(--rose-light);transform:translateY(-2px);}
+
+  /* Style spécial pour la carte de Maggie (l'anniversaire) */
+  .participante-card.maggie-card{background:linear-gradient(135deg,#fff8f0,#ffe8e5);border-color:var(--rose);}
+
+  /* Carte dépliée */
+  .participante-card.expanded{border-color:var(--rose);}
+
+  /* En-tête d'une carte : avatar + nom + chambre */
+  .p-header{display:flex;align-items:center;gap:12px;cursor:pointer;}
+
+  /* Avatar avec initiale colorée (couleur injectée dynamiquement via JS) */
+  .p-avatar{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;flex-shrink:0;font-family:'Playfair Display',serif;}
+
+  .p-name{font-weight:600;font-size:15px;}
+  .p-chambre{font-size:11px;color:var(--text-soft);margin-top:2px;}
+  .p-tel{font-size:12px;color:var(--sage);margin-top:2px;font-weight:500;}
+
+  /* Badge "L'anniversaire" positionné en absolu en haut à droite */
+  .p-badge{position:absolute;top:12px;right:12px;background:var(--rose);color:white;font-size:10px;padding:3px 8px;border-radius:20px;font-weight:600;}
+
+  /* Zone de détails (formulaire) cachée par défaut — visible quand .expanded */
+  .p-details{margin-top:14px;padding-top:14px;border-top:1px solid var(--warm);display:none;}
+  .participante-card.expanded .p-details{display:block;}
+
+  /* =========================================================
+     CHAMPS DE FORMULAIRE (présence, transport, massage, etc.)
+     ========================================================= */
+  .field-group{display:grid;gap:10px;}
+  .field-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+  .field-label{font-size:12px;color:var(--text-soft);font-weight:500;min-width:120px;flex-shrink:0;}
+  .field-input{flex:1;min-width:100px;border:1.5px solid var(--warm);border-radius:8px;padding:7px 10px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text);background:var(--cream);transition:border-color .2s;outline:none;}
+  .field-input:focus{border-color:var(--rose);}
+  select.field-input{cursor:pointer;}
+
+  /* Chips à cocher (checkbox stylisé) — classe .checked ajoutée par JS */
+  .checkbox-group{display:flex;flex-wrap:wrap;gap:8px;}
+  .checkbox-chip{display:flex;align-items:center;gap:5px;background:var(--warm);border:1.5px solid transparent;border-radius:20px;padding:5px 12px;cursor:pointer;font-size:12px;font-weight:500;transition:all .2s;user-select:none;}
+  .checkbox-chip input{display:none;} /* L'input HTML est caché, le style vient de la div */
+  .checkbox-chip.checked{background:var(--rose-light);border-color:var(--rose);color:var(--rose-deep);}
+
+  /* Chips radio (sélection unique) — classe .selected ajoutée par JS */
+  .radio-group{display:flex;flex-wrap:wrap;gap:8px;}
+  .radio-chip{display:flex;align-items:center;gap:5px;background:var(--warm);border:1.5px solid transparent;border-radius:20px;padding:6px 14px;cursor:pointer;font-size:12px;font-weight:500;transition:all .2s;user-select:none;}
+  .radio-chip.selected{background:var(--rose-light);border-color:var(--rose);color:var(--rose-deep);}
+
+  /* =========================================================
+     ONGLET PROGRAMME — Agenda jour par jour
+     ========================================================= */
+  .programme-day{background:white;border-radius:var(--radius);overflow:hidden;margin-bottom:16px;box-shadow:var(--shadow);}
+  .day-header{padding:16px 20px;font-weight:700;font-size:15px;color:white;display:flex;align-items:center;gap:10px;}
+
+  /* Couleur de l'en-tête selon le jour de la semaine */
+  .day-header.jeudi{background:linear-gradient(90deg,#7a8e9e,#9ab0c0);}
+  .day-header.vendredi{background:linear-gradient(90deg,var(--rose-deep),var(--rose));}
+  .day-header.samedi{background:linear-gradient(90deg,var(--sage),#5a8c7a);}
+  .day-header.dimanche{background:linear-gradient(90deg,var(--gold),#e0b860);}
+
+  .day-events{padding:16px 20px;display:grid;gap:12px;}
+  .event-item{display:flex;gap:14px;align-items:flex-start;}
+  .event-time{font-size:12px;font-weight:600;color:var(--rose-deep);min-width:55px;padding-top:2px;}
+  .event-info .event-title{font-weight:600;font-size:14px;}
+  .event-info .event-desc{font-size:12px;color:var(--text-soft);margin-top:3px;}
+
+  /* Badge de prix (ex: "29 €") sur les événements payants */
+  .event-info .event-price{display:inline-block;background:var(--sage-light);color:var(--sage);font-size:11px;font-weight:600;padding:2px 8px;border-radius:10px;margin-top:4px;}
+  .event-info .event-adresse{font-size:11px;color:var(--text-soft);font-style:italic;margin-top:3px;}
+
+  /* =========================================================
+     ONGLET FINANCES
+     ========================================================= */
+
+  /* Résumé en haut : total général, encaissé, reste à encaisser */
+  .finance-summary{background:linear-gradient(135deg,var(--rose-deep),var(--rose));color:white;border-radius:var(--radius);padding:24px;margin-bottom:20px;display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:16px;box-shadow:var(--shadow);}
+  .finance-stat{text-align:center;}
+  .finance-stat .stat-val{font-family:'Playfair Display',serif;font-size:28px;font-weight:700;}
+  .finance-stat .stat-label{font-size:12px;opacity:.82;margin-top:2px;}
+
+  /* Tableau des montants par participante */
+  .finance-table{width:100%;border-collapse:collapse;font-size:13px;}
+  .finance-table th{text-align:left;padding:10px 12px;background:var(--warm);color:var(--text-soft);font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.5px;}
+  .finance-table th:first-child{border-radius:8px 0 0 8px;}
+  .finance-table th:last-child{border-radius:0 8px 8px 0;}
+  .finance-table td{padding:10px 12px;border-bottom:1px solid var(--warm);vertical-align:middle;}
+  .finance-table tr:last-child td{border-bottom:none;}
+  .finance-table .total-cell{font-weight:700;color:var(--rose-deep);}
+
+  /* Bouton de statut paiement (ancienne version, remplacée par .fin-cell) */
+  .pay-btn{display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:20px;border:none;cursor:pointer;font-size:12px;font-weight:600;font-family:'DM Sans',sans-serif;transition:all .2s;}
+  .pay-btn.unpaid{background:#fff0ee;color:var(--rose-deep);border:1.5px solid var(--rose-light);}
+  .pay-btn.paid{background:#e8f5ee;color:#2e7d4f;border:1.5px solid #a8d8b9;}
+
+  /* =========================================================
+     ONGLET MENU
+     ========================================================= */
+  .menu-placeholder{border:2px dashed var(--rose-light);border-radius:var(--radius);padding:32px;text-align:center;color:var(--text-soft);background:#fff8f7;}
+  .menu-icon{font-size:36px;margin-bottom:10px;}
+  .menu-placeholder p{font-size:14px;line-height:1.6;}
+
+  /* Ligne d'un plat ajouté dynamiquement */
+  .menu-item-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--warm);font-size:13px;}
+  .menu-item-row:last-child{border-bottom:none;}
+
+  /* Prix en rouge/rose (affiché à droite du nom du plat) */
+  .menu-prix{font-weight:600;color:var(--rose-deep);white-space:nowrap;}
+
+  /* =========================================================
+     ONGLET INFOS PRATIQUES
+     ========================================================= */
+  .info-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;}
+  .info-card{background:white;border-radius:var(--radius);padding:18px;box-shadow:var(--shadow);}
+  .info-card .info-icon{font-size:24px;margin-bottom:8px;}
+  .info-card .info-title{font-weight:700;font-size:14px;margin-bottom:6px;color:var(--text);}
+  .info-card .info-content{font-size:13px;color:var(--text-soft);line-height:1.7;}
+  .info-card .info-content a{color:var(--rose-deep);text-decoration:none;font-weight:500;}
+  .info-card .info-content strong{color:var(--text);}
+
+  /* =========================================================
+     ONGLET MÉNAGE — Inscriptions au nettoyage du gîte
+     ========================================================= */
+  .menage-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px;}
+
+  /* Carte d'une participante — .inscrite ajoutée par JS quand elle s'inscrit */
+  .menage-card{background:white;border-radius:12px;padding:12px 16px;border:2px solid var(--warm);display:flex;align-items:center;justify-content:space-between;gap:10px;transition:all .2s;}
+  .menage-card.inscrite{background:#f0faf4;border-color:#a8d8b9;} /* Vert quand inscrite */
+  .menage-nom{font-size:13px;font-weight:600;flex:1;}
+  .menage-sub{font-size:11px;color:var(--text-soft);margin-top:2px;}
+
+  /* Bouton toggle inscription ménage : rouge si non, vert si oui */
+  .menage-toggle{border:none;border-radius:20px;padding:5px 12px;font-size:11px;font-weight:700;font-family:'DM Sans',sans-serif;cursor:pointer;transition:all .2s;white-space:nowrap;}
+  .menage-toggle.non{background:#fff0ee;color:var(--rose-deep);border:1.5px solid var(--rose-light);}
+  .menage-toggle.oui{background:#e8f5ee;color:#2e7d4f;border:1.5px solid #a8d8b9;}
+
+  /* =========================================================
+     ONGLET À EMPORTER — Checklist de bagages
+     ========================================================= */
+  .checklist{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px;}
+
+  /* Item de checklist — .done ajouté par JS quand coché */
+  .checklist-item{display:flex;align-items:center;gap:10px;background:white;border-radius:10px;padding:10px 14px;cursor:pointer;font-size:13px;font-weight:500;border:1.5px solid var(--warm);transition:all .2s;user-select:none;}
+  .checklist-item.done{background:#f0faf4;border-color:#a8d8b9;color:#2e7d4f;text-decoration:line-through;opacity:.7;}
+  .checklist-item .check-icon{font-size:16px;flex-shrink:0;}
+
+  /* =========================================================
+     RESPONSIVE — Mobile (≤ 600px)
+     ========================================================= */
+  @media(max-width:600px){
+    .finance-table{font-size:12px;}
+    .finance-table th,.finance-table td{padding:8px;}
+    .field-label{min-width:90px;}
+  }
+
+  /* =========================================================
+     TOAST (notification de sauvegarde)
+     Apparaît en bas de l'écran lors d'une sauvegarde Firebase.
+     Animé via la classe .show ajoutée/retirée par JS.
+     ========================================================= */
+  .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--text);color:white;padding:10px 22px;border-radius:40px;font-size:13px;font-weight:500;transition:transform .3s;z-index:1000;pointer-events:none;}
+  .toast.show{transform:translateX(-50%) translateY(0);}
+
+  /* =========================================================
+     OVERLAY DE CHARGEMENT
+     Affiché pendant le fetch Firebase initial (bloque l'UI).
+     ========================================================= */
+  #loading-overlay{position:fixed;inset:0;background:rgba(253,246,238,.92);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:2000;gap:16px;}
+
+  /* Spinner animé en rotation continue */
+  .spinner{width:40px;height:40px;border:4px solid var(--rose-light);border-top-color:var(--rose-deep);border-radius:50%;animation:spin .8s linear infinite;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+
+  /* =========================================================
+     BOUTONS
+     ========================================================= */
+  .btn-primary{background:var(--rose-deep);color:white;border:none;border-radius:10px;padding:10px 20px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:background .2s;margin-top:16px;}
+  .btn-primary:hover{background:#a8443a;}
+  .btn-secondary{background:var(--text-soft);color:white;border:none;border-radius:10px;padding:10px 20px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;margin-top:16px;}
+  .btn-filter{background:var(--warm);color:var(--text-soft);border:1.5px solid transparent;border-radius:20px;padding:7px 16px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all .2s;}
+  .btn-filter.active{background:var(--rose-light);border-color:var(--rose);color:var(--rose-deep);font-weight:700;}
+
+  /* =========================================================
+     CELLULES CLIQUABLES DU TABLEAU FINANCES
+     Cliquer sur une cellule la marque comme payée (vert).
+     ========================================================= */
+  .fin-cell {
+    cursor: pointer;
+    border-radius: 8px;
+    padding: 4px 8px;
+    font-weight: 600;
+    transition: all .2s;
+    display: inline-block;
+    min-width: 36px;
+    text-align: center;
+    user-select: none;
+  }
+  .fin-cell.unpaid { color: var(--text); background: transparent; }
+  .fin-cell.unpaid:hover { background: var(--warm); }
+  .fin-cell.paid { background: #e8f5ee; color: #2e7d4f; border: 1.5px solid #a8d8b9; }
+  .fin-cell.empty { color: var(--text-soft); font-weight: 400; cursor: default; } /* Montant nul : non cliquable */
+
+  /* Total par personne : style selon l'état global */
+  .fin-total.paid { background: #e8f5ee; color: #2e7d4f; border: 1.5px solid #a8d8b9; border-radius: 8px; padding: 4px 8px; display: inline-block; font-weight: 700; }
+  .fin-total.unpaid { font-weight: 700; color: var(--rose-deep); }
+
+  /* =========================================================
+     ONGLET MENU — Affichage des plats (carte du restaurant)
+     ========================================================= */
+  .menu-text-item { display:flex; justify-content:space-between; align-items:baseline; padding:5px 0; border-bottom:1px solid var(--warm); font-size:13px; font-weight:600; }
+  .menu-text-item:last-of-type { border-bottom:none; }
+  .menu-desc { font-size:11px; color:var(--text-soft); margin: 1px 0 6px; font-style:italic; }
+
+  /* Textarea de notes (générale ou par participante) */
+  .note-textarea{width:100%;border:1.5px solid var(--warm);border-radius:10px;padding:10px 12px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text);background:var(--cream);resize:vertical;min-height:70px;outline:none;transition:border-color .2s;}
+  .note-textarea:focus{border-color:var(--rose);}
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     EN-TÊTE DE L'APPLICATION
+     Affiche le nom de l'événement, le lieu et les dates.
+     ============================================================ -->
+<header>
+  <h1>🎂 WE Anniversaire Maggie</h1>
+  <p class="subtitle">Jaujac, Ardèche · Organisation du séjour</p>
+  <div class="dates-badge">📅 Jeudi 7 → Dimanche 10 mai 2026</div>
+</header>
+
+<!-- ============================================================
+     BARRE DE NAVIGATION PAR ONGLETS
+     Chaque bouton appelle showTab(name, btn) qui affiche
+     le panneau correspondant et masque les autres.
+     ============================================================ -->
+<nav class="nav">
+  <button class="active" onclick="showTab('participantes',this)">👩 Participantes</button>
+  <button onclick="showTab('programme',this)">📅 Programme</button>
+  <button onclick="showTab('finances',this)">💰 Finances</button>
+  <button onclick="showTab('menu',this)">🍽️ Menu Resto</button>
+  <button onclick="showTab('infos',this)">📍 Infos pratiques</button>
+  <button onclick="showTab('menage',this)">🧹 Ménage</button>
+  <button onclick="showTab('emporter',this)">🎒 À emporter</button>
+</nav>
+
+<div class="content">
+
+  <!-- ============================================================
+       ONGLET 1 : PARTICIPANTES
+       La grille est générée dynamiquement par renderParticipantes().
+       Chaque carte est un accordéon : cliquer sur le nom déploie
+       un formulaire permettant à chaque participante de renseigner
+       son arrivée, transport, participation aux activités, etc.
+       ============================================================ -->
+  <div class="tab-panel active" id="tab-participantes">
+    <div class="section-title">Les participantes</div>
+    <p class="section-desc">Cliquez sur votre prénom pour voir et modifier vos infos. Les données sont sauvegardées automatiquement.</p>
+    <!-- Conteneur rempli dynamiquement par renderParticipantes() en JS -->
+    <div class="participantes-grid" id="participantes-grid"></div>
+  </div>
+
+  <!-- ============================================================
+       ONGLET 2 : PROGRAMME
+       Planning statique du weekend (jeudi → dimanche).
+       La classe CSS du .day-header détermine la couleur du bandeau
+       (jeudi=bleu, vendredi=rose, samedi=sauge, dimanche=or).
+       ============================================================ -->
+  <div class="tab-panel" id="tab-programme">
+    <div class="section-title">Programme du weekend</div>
+    <p class="section-desc">Déroulé complet du séjour</p>
+
+    <!-- Jeudi 7 mai -->
+    <div class="programme-day">
+      <div class="day-header jeudi">🚛 Jeudi 7 mai 2026</div>
+      <div class="day-events">
+        <div class="event-item">
+          <div class="event-time">8h30</div>
+          <div class="event-info">
+            <div class="event-title">Départ de Tullins — CAMION 1</div>
+            <div class="event-desc">Avec Christelle &amp; Stéphanie · Mobs à l'intérieur du camion · Pour préparer la maison !</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Vendredi 8 mai -->
+    <div class="programme-day">
+      <div class="day-header vendredi">🌸 Vendredi 8 mai 2026</div>
+      <div class="day-events">
+        <div class="event-item">
+          <div class="event-time">Avant 19h</div>
+          <div class="event-info">
+            <div class="event-title">Arrivée à Jaujac</div>
+            <div class="event-desc">Dépôt des affaires au gîte</div>
+            <div class="event-adresse">📍 102 Chemin des Chênes, 07380 Jaujac · ☎️ Maman : 06 27 31 30 24</div>
+          </div>
+        </div>
+        <div class="event-item">
+          <div class="event-time">18h45</div>
+          <div class="event-info">
+            <div class="event-title">Départ pour le restaurant</div>
+            <div class="event-desc">Si arrivée après 18h30 → directement au restaurant</div>
+          </div>
+        </div>
+        <div class="event-item">
+          <div class="event-time">19h00</div>
+          <div class="event-info">
+            <div class="event-title">🍽️ Dîner — Le Bistrot du Jardin &nbsp;<em style="font-weight:400;font-size:13px;color:#2d2420;">✨ se faire belles !</em></div>
+            <div class="event-adresse">📍 10 Romégier, 07380 Fabras · ☎️ 04 87 75 70 35</div>
+            <span class="event-price">29 € + extras (voir onglet Menu)</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Samedi 9 mai -->
+    <div class="programme-day">
+      <div class="day-header samedi">🌿 Samedi 9 mai 2026</div>
+      <div class="day-events">
+        <div class="event-item">
+          <div class="event-time">Matin</div>
+          <div class="event-info"><div class="event-title">🥞 Brunch chez Maman</div></div>
+        </div>
+        <div class="event-item">
+          <div class="event-time">Journée</div>
+          <div class="event-info">
+            <div class="event-title">🛵 Visite du village en mob et vélo</div>
+            <div class="event-desc">Puis apéro sur la place du village</div>
+          </div>
+        </div>
+        <div class="event-item">
+          <div class="event-time">15h00</div>
+          <div class="event-info">
+            <div class="event-title">💆 Chez David &amp; Rachel</div>
+            <div class="event-desc">Massage, goûter, apéro, repas, piscine</div>
+            <span class="event-price">50 € / personne · Massage : 75 €/h ou 37,50 €/demi-heure</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Dimanche 10 mai -->
+    <div class="programme-day">
+      <div class="day-header dimanche">☀️ Dimanche 10 mai 2026</div>
+      <div class="day-events">
+        <div class="event-item">
+          <div class="event-time">Matin</div>
+          <div class="event-info"><div class="event-title">🥞 Brunch</div></div>
+        </div>
+        <div class="event-item">
+          <div class="event-time">14h00</div>
+          <div class="event-info"><div class="event-title">🔥 Barbecue</div></div>
+        </div>
+        <div class="event-item">
+          <div class="event-time">Fin</div>
+          <div class="event-info">
+            <div class="event-title">🧹 Ménage du gîte</div>
+            <div class="event-desc">Inscrivez-vous dans l'onglet Ménage !</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Encart cadeau Maggie -->
+    <div class="card" style="background:linear-gradient(135deg,#fff8e8,#fff0d0);border:1px solid var(--gold);">
+      <div class="card-title" style="color:var(--gold);">🎁 Cadeau Maggie</div>
+      <p style="font-size:14px;line-height:1.6;color:var(--text-soft);">Maggie pioche les cadeaux <strong>1 par 1</strong> et doit deviner <strong>qui est à l'origine de cette surprise</strong>.</p>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       ONGLET 3 : FINANCES
+       Le tableau est généré dynamiquement par renderFinances().
+       Cliquer sur une cellule la valide en vert (toggleCell).
+       Cliquer sur le total valide/dévalide toutes les cellules
+       d'une même participante (toggleAllCells).
+       ============================================================ -->
+  <div class="tab-panel" id="tab-finances">
+    <div class="section-title">Récapitulatif financier</div>
+    <p class="section-desc">Cliquez sur une cellule pour la valider en vert ✅. Cliquez à nouveau pour annuler.</p>
+
+    <!-- Résumé global (total, encaissé, reste) — rempli par renderFinances() -->
+    <div class="finance-summary" id="finance-summary"></div>
+
+    <div class="card" style="overflow-x:auto;">
+      <table class="finance-table">
+        <thead><tr>
+          <!-- Colonnes : Participante | Resto | David&Rachel | Mob/Vélo | Massage | Total -->
+          <th>Participante</th><th>Resto</th><th>D&amp;R</th>
+          <th>Mob</th><th>Massage</th><th>Total</th>
+        </tr></thead>
+        <!-- Corps du tableau rempli dynamiquement par renderFinances() -->
+        <tbody id="finance-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       ONGLET 4 : MENU RESTO
+       Affichage statique de la carte du Bistrot du Jardin.
+       Organisé en 3 cartes : Entrées/Salades, Plats/Planches, Desserts/Formules.
+       ============================================================ -->
+  <div class="tab-panel" id="tab-menu">
+    <div class="section-title">Menu — Le Bistrot du Jardin</div>
+    <p class="section-desc">Vendredi 8 mai · 10 Romégier, 07380 Fabras · ☎️ 04 87 75 70 35</p>
+
+    <!-- Bandeau informatif sur le principe du menu groupe -->
+    <div class="card" style="background:linear-gradient(135deg,#fff8e8,#fff0d0);border:1px solid var(--gold);">
+      <p style="font-size:13px;color:var(--text-soft);text-align:center;">Les plats sont choisis <strong>sur place le soir du dîner</strong> · Menu de groupe à <strong>29 €</strong><br><em style="font-size:11px;">*hors carte et jours fériés</em></p>
+    </div>
+
+    <!-- Grille 2 colonnes (auto-fit) pour les catégories de plats -->
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;">
+
+      <!-- ENTRÉES & SALADES -->
+      <div class="card">
+        <div class="card-title" style="font-size:15px;margin-bottom:12px;">🥗 Entrées</div>
+        <!-- Chaque .menu-text-item affiche : nom à gauche, prix à droite -->
+        <div class="menu-text-item"><span>Jambon ibérique</span><span class="menu-prix">13€</span></div>
+        <p class="menu-desc">Pan con tomate</p>
+        <div class="menu-text-item"><span>Foie gras mi-cuit</span><span class="menu-prix">14€</span></div>
+        <p class="menu-desc">Chutney de fruits et pains toastés</p>
+        <div class="menu-text-item"><span>Asperge et guanciale grillé</span><span class="menu-prix">12€</span></div>
+        <p class="menu-desc">Œuf parfait, crème de parmesan, mouillette</p>
+        <div class="menu-text-item"><span>Caillette du bistrot</span><span class="menu-prix">8€</span></div>
+        <p class="menu-desc">Sauce tomate maison, salade</p>
+        <div class="menu-text-item"><span>Crème de burrata, jambon San Daniel</span><span class="menu-prix">11€</span></div>
+        <p class="menu-desc">Pesto basilic, tomates cerises, parmesan</p>
+        <div class="menu-text-item"><span>Poivrons marinés</span><span class="menu-prix">7€</span></div>
+        <p class="menu-desc">Œuf dur, baqueroñes, olives</p>
+
+        <div class="card-title" style="font-size:15px;margin:14px 0 10px;">🥗 Salades</div>
+        <div class="menu-text-item"><span>Poke bowl</span><span class="menu-prix">15€</span></div>
+        <p class="menu-desc">Riz, mangue, avocat, saumon, algues wakamé</p>
+        <div class="menu-text-item"><span>Salade César</span><span class="menu-prix">16€</span></div>
+        <p class="menu-desc">Poulet croustillant, parmesan, croûtons, sauce césar</p>
+        <div class="menu-text-item"><span>Salade Niçoise</span><span class="menu-prix">16€</span></div>
+        <p class="menu-desc">Thon, œufs, olives, baqueroñes, poivrons</p>
+        <div class="menu-text-item"><span>Burrata du jardin</span><span class="menu-prix">16€</span></div>
+        <p class="menu-desc">Burrata, tomates anciennes, roquette, pesto basilic</p>
+      </div>
+
+      <!-- PLATS & PLANCHES -->
+      <div class="card">
+        <div class="card-title" style="font-size:15px;margin-bottom:12px;">🍽️ Plats</div>
+        <div class="menu-text-item"><span>Mafaldine à la pistache</span><span class="menu-prix">19€</span></div>
+        <p class="menu-desc">Pesto pistache, mortadelle, burrata</p>
+        <div class="menu-text-item"><span>Bagel aux sésames</span><span class="menu-prix">15€</span></div>
+        <p class="menu-desc">Saumon fumé, cream cheese, coleslaw, frites</p>
+        <div class="menu-text-item"><span>Filet de bœuf charolais maturé</span><span class="menu-prix">29€</span></div>
+        <p class="menu-desc">Foie gras poêlé, sauce morilles, écrasé de pomme de terre</p>
+        <div class="menu-text-item"><span>Pavé de saumon d'Écosse</span><span class="menu-prix">22€</span></div>
+        <p class="menu-desc">Légumes printaniers, espuma à l'ail noir</p>
+        <div class="menu-text-item"><span>Souris d'agneau confite miel &amp; thym</span><span class="menu-prix">28€</span></div>
+        <p class="menu-desc">Légumes printaniers</p>
+        <div class="menu-text-item"><span>Côte de bœuf (~1,1 kg)</span><span class="menu-prix">55€</span></div>
+        <p class="menu-desc">Frites, salade, sauce poivres ou morilles</p>
+        <div class="menu-text-item"><span>Burger du Bistrot</span><span class="menu-prix">17€</span></div>
+        <p class="menu-desc">Steak Galice 200g, bacon, tomates, sauce cheddar</p>
+        <div class="menu-text-item"><span>Cuisse de canard confite</span><span class="menu-prix">21€</span></div>
+        <p class="menu-desc">Légumes printaniers, jus de viande</p>
+
+        <div class="card-title" style="font-size:15px;margin:14px 0 10px;">🍕 Planches (soir)</div>
+        <div class="menu-text-item"><span>Planche du Jardin</span><span class="menu-prix">15€</span></div>
+        <p class="menu-desc">Houmous, falafels, guacamole, légumes croquants</p>
+        <div class="menu-text-item"><span>Planche Mixte</span><span class="menu-prix">17€</span></div>
+        <p class="menu-desc">Jambon San Daniel, coppa, charcuterie, fromages</p>
+        <div class="menu-text-item"><span>Planche du Bistrot</span><span class="menu-prix">19€</span></div>
+        <p class="menu-desc">Croquettes Reblochon, chèvre frit, gambas panko, falafels</p>
+      </div>
+
+      <!-- DESSERTS & FORMULES -->
+      <div class="card">
+        <div class="card-title" style="font-size:15px;margin-bottom:12px;">🍮 Desserts</div>
+        <div class="menu-text-item"><span>Assiette de fromages</span><span class="menu-prix">7€</span></div>
+        <div class="menu-text-item"><span>Le dulcey</span><span class="menu-prix">9€</span></div>
+        <p class="menu-desc">Ganache dulcey Valrhona, pommes glacées</p>
+        <div class="menu-text-item"><span>Millefeuille fraises de Carpentras</span><span class="menu-prix">10€</span></div>
+        <p class="menu-desc">Crème diplomate</p>
+        <div class="menu-text-item"><span>Faisselle d'Ardèche</span><span class="menu-prix">5€</span></div>
+        <p class="menu-desc">Sucre, crème de marron, miel ou coulis</p>
+        <div class="menu-text-item"><span>Salade de fruits frais</span><span class="menu-prix">6€</span></div>
+        <div class="menu-text-item"><span>Brioche perdue, glace fleur de lait</span><span class="menu-prix">7€</span></div>
+        <p class="menu-desc">Caramel beurre salé ou Nutella ou praliné</p>
+        <div class="menu-text-item"><span>Café gourmand</span><span class="menu-prix">8€</span></div>
+        <div class="menu-text-item"><span>Crêpes</span><span class="menu-prix">4€</span></div>
+        <p class="menu-desc">Sucre, Nutella ou caramel beurre salé</p>
+
+        <div class="card-title" style="font-size:15px;margin:14px 0 10px;">📋 Formules</div>
+        <div class="menu-text-item"><span>Entrée + plat + dessert</span><span class="menu-prix">18,50€</span></div>
+        <div class="menu-text-item"><span>Entrée + plat ou plat + dessert</span><span class="menu-prix">15€</span></div>
+        <div class="menu-text-item"><span>Plat seul</span><span class="menu-prix">14€</span></div>
+        <div class="menu-text-item"><span>Menu enfant</span><span class="menu-prix">13€</span></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ============================================================
+       ONGLET 5 : INFOS PRATIQUES
+       Contacts, adresses, répartition des chambres, notes.
+       ============================================================ -->
+  <div class="tab-panel" id="tab-infos">
+    <div class="section-title">Infos pratiques</div>
+    <p class="section-desc">Tous les contacts et adresses utiles</p>
+    <div class="info-grid">
+      <div class="info-card">
+        <div class="info-icon">🏡</div>
+        <div class="info-title">Gîte — Adresse</div>
+        <div class="info-content"><strong>102 Chemin des Chênes</strong><br>07380 Jaujac<br><br>☎️ Maman : <a href="tel:0627313024">06 27 31 30 24</a></div>
+      </div>
+      <div class="info-card">
+        <div class="info-icon">🍽️</div>
+        <div class="info-title">Restaurant vendredi</div>
+        <div class="info-content"><strong>Le Bistrot du Jardin</strong><br>10 Romégier, 07380 Fabras<br>☎️ <a href="tel:0487757035">04 87 75 70 35</a><br>RDV à partir de <strong>19h</strong></div>
+      </div>
+      <div class="info-card">
+        <div class="info-icon">💆</div>
+        <div class="info-title">Massages &amp; Samedi aprem</div>
+        <div class="info-content"><strong>Chez David &amp; Rachel</strong> — départ 15h<br><br>Massage : <strong>75 €/h</strong> ou <strong>37,50 €/demi-heure</strong><br>Journée : <strong>50 €/pers</strong> (goûter + apéro + repas + piscine)</div>
+      </div>
+      <div class="info-card">
+        <div class="info-icon">🛵</div>
+        <div class="info-title">Mob &amp; vélo électrique</div>
+        <div class="info-content">Balade samedi dans le village<br><br><strong>Mob (80€)</strong> : Christelle, Maggie, Rosy, Peggy<br><strong>Vélo élec</strong> : Stéphanie, Floriane<br><strong>À confirmer</strong> : Karine, Estelle, Agnès</div>
+      </div>
+      <div class="info-card">
+        <div class="info-icon">🚛</div>
+        <div class="info-title">Transport</div>
+        <div class="info-content"><strong>Camion 1</strong> — Tullins, jeudi 8h30<br>Avec Christelle &amp; Stéphanie<br>Mobs à l'intérieur · Pour préparer la maison<br><br>Arrivée avant 19h<br>Si après 18h30 → directement au resto</div>
+      </div>
+      <div class="info-card">
+        <div class="info-icon">🛏️</div>
+        <div class="info-title">Chambres</div>
+        <div class="info-content">🟥 <strong>Ch. CIB</strong> — Christelle &amp; Maggie<br>🟢 <strong>Ch. Olive</strong> — Stéphanie<br>🟠 <strong>Ch. Orange</strong> — Rosy &amp; Clothilde<br>🟣 <strong>Ch. Violette</strong> — Peggy &amp; Audrey<br>🏠 <strong>Gîte RDC</strong> — Christelle Coiffeuse<br>🛏️ <strong>Dortoir</strong> — Karine, Estelle, Floriane, Agnès</div>
+      </div>
+    </div>
+
+    <!-- Zone de notes libres, sauvegardées dans Firebase -->
+    <div class="card" style="margin-top:16px;">
+      <div class="card-title">📝 Notes générales</div>
+      <div class="card-sub">Pour tatie — mémo et infos complémentaires</div>
+      <!-- saveNotes() est appelé manuellement via le bouton -->
+      <textarea class="note-textarea" id="notes-generales" placeholder="Ajoute ici tes notes, rappels, infos à venir..."></textarea>
+      <button class="btn-primary" onclick="saveNotes()">Sauvegarder les notes</button>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       ONGLET 6 : MÉNAGE
+       La grille est générée dynamiquement par renderMenage().
+       Chaque participante peut s'inscrire/se désinscrire du ménage
+       du dimanche. Le récapitulatif liste les inscrits.
+       ============================================================ -->
+  <div class="tab-panel" id="tab-menage">
+    <div class="section-title">🧹 Organisation du ménage</div>
+    <p class="section-desc">Dimanche — qui peut participer au ménage du gîte avant de partir ?</p>
+    <div class="card">
+      <div class="card-title">Inscriptions</div>
+      <div class="card-sub">Cliquez sur votre prénom pour vous inscrire</div>
+      <!-- Rempli par renderMenage() -->
+      <div class="menage-grid" id="menage-grid"></div>
+    </div>
+    <!-- Récapitulatif des inscrits, mis à jour par renderMenage() -->
+    <div class="card" style="background:linear-gradient(135deg,#f0faf4,#e0f0e8);border:1px solid #a8d8b9;">
+      <div class="card-title" style="color:#2e7d4f;">✅ Récapitulatif</div>
+      <div id="menage-summary" style="font-size:13px;color:var(--text-soft);line-height:1.8;"></div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       ONGLET 7 : À EMPORTER
+       Checklist de bagages à cocher avant le départ.
+       Les items proviennent de CHECKLIST_ITEMS (JS).
+       L'état est persisté dans Firebase (state.checklist).
+       ============================================================ -->
+  <div class="tab-panel" id="tab-emporter">
+    <div class="section-title">Liste des affaires à emporter</div>
+    <p class="section-desc">Cochez au fur et à mesure de votre préparation !</p>
+    <!-- Rempli par renderChecklist() -->
+    <div class="checklist" id="checklist"></div>
+    <!-- Remet toutes les cases à décoché -->
+    <button class="btn-secondary" onclick="resetChecklist()">Tout décocher</button>
+  </div>
+
+</div><!-- /content -->
+
+<!-- ============================================================
+     OVERLAY DE CHARGEMENT
+     Visible pendant le fetch initial de Firebase.
+     Masqué par showLoadingOverlay(false) une fois les données reçues.
+     ============================================================ -->
+<div id="loading-overlay">
+  <div class="spinner"></div>
+  <p style="font-family:'DM Sans',sans-serif;color:var(--text-soft);font-size:14px;">Chargement des données…</p>
+</div>
+
+<!-- Notification de sauvegarde (affiché 2 secondes puis masqué) -->
+<div class="toast" id="toast">✓ Sauvegardé</div>
+
+
+<script>
+// ================================================================
+// FIREBASE REALTIME DATABASE
+// ================================================================
+// URL de la base de données Firebase utilisée pour persister l'état
+// de l'application entre les sessions et entre les utilisateurs.
+// La route /state.json désigne le nœud racine utilisé.
+const FB_URL = 'https://we-maggie-default-rtdb.europe-west1.firebasedatabase.app/state.json';
+
+
+// ================================================================
+// DONNÉES STATIQUES
+// ================================================================
+
+/**
+ * Liste des participantes avec leurs informations de base.
+ * Ces données servent de "template" — l'état dynamique (présence,
+ * transport, etc.) est mergé depuis Firebase par mergeState().
+ * maggie:true identifie l'anniversaire (style spécial sur sa carte).
+ */
+const PARTICIPANTES_INIT = [
+  {id:'christelle',  nom:'Christelle',             tel:'06 15 33 09 18', chambre:'Chambre CIB',      maggie:false},
+  {id:'stephanie',   nom:'Stéphanie',              tel:'06 33 16 12 65', chambre:'Chambre Olive',    maggie:false},
+  {id:'karine',      nom:'Karine',                 tel:'06 30 23 42 95', chambre:'Dortoir',          maggie:false},
+  {id:'estelle',     nom:'Estelle',                tel:'06 18 92 73 44', chambre:'Dortoir',          maggie:false},
+  {id:'floriane',    nom:'Floriane',               tel:'06 59 42 25 64', chambre:'Dortoir',          maggie:false},
+  {id:'maggie',      nom:'Maggie 🎂',              tel:'06 12 31 05 52', chambre:'Chambre CIB',      maggie:true },
+  {id:'rosy',        nom:'Roselyne (Rosy)',         tel:'06 99 34 56 65', chambre:'Chambre Orange',   maggie:false},
+  {id:'clothilde',   nom:'Clothilde',              tel:'06 84 75 60 00', chambre:'Chambre Orange',   maggie:false},
+  {id:'agnes',       nom:'Agnès',                  tel:'06 18 92 73 44', chambre:'Dortoir',          maggie:false},
+  {id:'peggy',       nom:'Peggy',                  tel:'06 13 49 72 27', chambre:'Chambre Violette', maggie:false},
+  {id:'audrey',      nom:'Audrey',                 tel:'06 83 40 70 85', chambre:'Chambre Violette', maggie:false},
+  {id:'christelle2', nom:'Christelle (Coiffeuse)', tel:'06 60 53 71 08', chambre:'Chambre Gîte RDC', maggie:false},
+];
+
+/**
+ * Items de la checklist "À emporter".
+ * Chaque chaîne est une clé dans state.checklist (true si cochée).
+ */
+const CHECKLIST_ITEMS = [
+  'Affaires de sport','Basket','Maillot de bain','Chapeau ou casquette',
+  'Tenue pour se faire belle','Affaires de toilettes','Surprise pour Maggie',
+  'Médicaments pour la tête 😉','Chargeur téléphone','Téléphone','Bonne humeur 😄',
+];
+
+/**
+ * Valeurs par défaut d'une fiche de présence.
+ * Appliquées à chaque participante lors de la création ou du merge
+ * si une clé est absente de Firebase.
+ */
+const DEFAUT = {
+  resto:false, brunchSamedi:false, davidrachel:false, brunchDimanche:false,
+  barbecue:false, menage:false, menageApres16h:false,
+  massage:'', transport:'', departJour:'', departHeure:'',
+  heureArrivee:'', lieuArrivee:'jaujac', paye:false, notes:'',
+};
+
+/**
+ * Palette de couleurs pour les avatars des participantes.
+ * Attribuées par index (COLORS[i % COLORS.length]).
+ */
+const COLORS=['#e8847a','#7a9e8e','#c4564a','#9b7ec8','#d4916a','#6a9bc4','#c4b06a','#8e7ac4','#6ac4a0','#c46a9b','#7ac4c4','#c4846a'];
+
+
+// ================================================================
+// STATE GLOBAL
+// ================================================================
+/**
+ * Objet d'état central de l'application.
+ * Toutes les modifications passent par cet objet avant d'être
+ * envoyées à Firebase via pushToFirebase().
+ *
+ * @property {Array}  participantes - Tableau des participantes avec leur presence
+ * @property {Object} checklist     - { itemName: true/false }
+ * @property {Array}  menu          - Plats ajoutés manuellement par l'organisatrice
+ * @property {Object} commandes     - { participanteId: { menuItemId: true/false } }
+ * @property {string} notes         - Notes générales (onglet Infos)
+ */
+let state = {participantes:[], checklist:{}, menu:[], commandes:{}, notes:''};
+
+// Timeout utilisé pour le debounce de la sauvegarde Firebase (600ms)
+let saveTimeout = null;
+
+
+// ================================================================
+// FIREBASE — LECTURE / ÉCRITURE
+// ================================================================
+
+/**
+ * Fusionne les données brutes de Firebase avec les données statiques.
+ * Les participantes absentes de Firebase reçoivent les valeurs DEFAUT.
+ * Les participantes connues conservent leurs données Firebase.
+ *
+ * @param {Object|null} raw - Données brutes venant de Firebase (ou null si vide)
+ */
+function mergeState(raw) {
+  const s = raw || {};
+  state.checklist  = s.checklist  || {};
+  state.menu       = s.menu       || [];
+  state.commandes  = s.commandes  || {};
+  state.notes      = s.notes      || '';
+  state.participantes = PARTICIPANTES_INIT.map(init => {
+    const f = (s.participantes||[]).find(p => p.id === init.id);
+    // Si la participante existe dans Firebase : merge avec DEFAUT pour les clés manquantes
+    return f ? {...init, presence:{...DEFAUT,...(f.presence||{})}} : {...init, presence:{...DEFAUT}};
+  });
+}
+
+/**
+ * Affiche ou masque l'overlay de chargement.
+ * @param {boolean} show
+ */
+function showLoadingOverlay(show) {
+  document.getElementById('loading-overlay').style.display = show ? 'flex' : 'none';
+}
+
+/**
+ * Affiche une notification "✓ Sauvegardé" pendant 2 secondes.
+ * @param {string} m - Message à afficher (optionnel)
+ */
+function toast(m='✓ Sauvegardé') {
+  const t = document.getElementById('toast');
+  t.textContent = m;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+// Verrou pour éviter les chargements multiples depuis Firebase
+let fbLoaded = false;
+
+/**
+ * Charge l'état depuis Firebase Realtime Database.
+ * En cas d'échec (réseau, etc.), l'état est initialisé avec les valeurs par défaut.
+ * Appelée une seule fois à l'initialisation (garde fbLoaded).
+ */
+async function loadFromFirebase() {
+  if (fbLoaded) return;
+  showLoadingOverlay(true);
+  try {
+    const r = await fetch(FB_URL);
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    const text = await r.text();
+    // Firebase renvoie "null" (chaîne) si la base est vide
+    const data = (text && text.trim() !== 'null') ? JSON.parse(text) : null;
+    mergeState(data);
+  } catch(e) {
+    console.warn('Firebase load failed:', e);
+    mergeState(null); // Fallback : valeurs par défaut
+  }
+  fbLoaded = true;
+  showLoadingOverlay(false);
+  renderParticipantes();
+  renderMenuList();
+  // Restaure les notes générales si elles existent
+  if (state.notes) document.getElementById('notes-generales').value = state.notes;
+}
+
+/**
+ * Déclenche une sauvegarde Firebase avec un debounce de 600ms.
+ * Affiche le toast immédiatement pour un retour visuel instantané.
+ */
+function save() {
+  toast();
+  clearTimeout(saveTimeout);
+  saveTimeout = setTimeout(pushToFirebase, 600);
+}
+
+/**
+ * Envoie l'état complet vers Firebase via une requête PUT.
+ * PUT écrase complètement le nœud /state.json.
+ */
+async function pushToFirebase() {
+  try {
+    await fetch(FB_URL, {
+      method: 'PUT',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({
+        participantes: state.participantes,
+        checklist: state.checklist,
+        menu: state.menu,
+        commandes: state.commandes,
+        notes: state.notes,
+      })
+    });
+  } catch(e) { console.warn('Firebase save failed', e); }
+}
+
+
+// ================================================================
+// NAVIGATION PAR ONGLETS
+// ================================================================
+
+/**
+ * Affiche l'onglet dont le nom est passé en paramètre.
+ * Cache tous les autres panneaux et retire la classe active des boutons.
+ * Déclenche le rendu des onglets dynamiques (finances, menu, etc.)
+ * uniquement à la première ouverture ou à chaque visite.
+ *
+ * @param {string} name - Identifiant de l'onglet (ex: 'finances')
+ * @param {HTMLElement} btn - Bouton cliqué (pour lui ajouter .active)
+ */
+function showTab(name, btn) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  if (btn) btn.classList.add('active');
+  // Rendu à la demande pour les onglets dynamiques
+  if (name === 'finances') renderFinances();
+  if (name === 'menu') renderMenuCommandes();
+  if (name === 'emporter') renderChecklist();
+  if (name === 'menage') renderMenage();
+}
+
+
+// ================================================================
+// UTILITAIRE : SELECT D'HEURE
+// ================================================================
+
+/**
+ * Génère un <select> d'heures de 08:00 à 21:30, par tranches de 30 min.
+ * Utilisé pour l'heure d'arrivée et l'heure de départ.
+ *
+ * @param {string} pid   - ID de la participante (pour onchange)
+ * @param {string} key   - Clé dans presence (ex: 'heureArrivee')
+ * @param {string} val   - Valeur actuellement sélectionnée
+ * @returns {string}     HTML du <select>
+ */
+function heureSelect(pid, key, val) {
+  const opts = [''].concat([...Array(30)].map((_,i) => {
+    const h = Math.floor(i/2) + 8, m = i%2===0 ? '00' : '30';
+    return `${String(h).padStart(2,'0')}:${m}`;
+  }));
+  return `<select class="field-input" onchange="updateP('${pid}','${key}',this.value);save()">
+    ${opts.map(o => `<option value="${o}" ${val===o?'selected':''}>${o||'— heure —'}</option>`).join('')}
+  </select>`;
+}
+
+
+// ================================================================
+// ONGLET PARTICIPANTES
+// ================================================================
+
+/**
+ * Génère et insère la grille des cartes participantes dans le DOM.
+ * Appelée après le chargement Firebase.
+ */
+function renderParticipantes() {
+  const g = document.getElementById('participantes-grid');
+  g.innerHTML = '';
+  state.participantes.forEach((p, i) => {
+    const col = COLORS[i % COLORS.length]; // Couleur de l'avatar
+    const ini = p.nom.replace('🎂','').trim()[0].toUpperCase(); // Initiale
+    const d = document.createElement('div');
+    d.className = 'participante-card' + (p.maggie ? ' maggie-card' : '');
+    d.id = 'pcard-' + p.id;
+    d.innerHTML = `${p.maggie ? '<div class="p-badge">🎂 L\'anniversaire</div>' : ''}
+      <div class="p-header" onclick="toggleCard('${p.id}')">
+        <div class="p-avatar" style="background:${col}20;color:${col};">${ini}</div>
+        <div><div class="p-name">${p.nom}</div><div class="p-chambre">🏠 ${p.chambre}</div><div class="p-tel">📞 ${p.tel}</div></div>
+      </div>
+      <div class="p-details" id="pdetails-${p.id}">${pForm(p)}</div>`;
+    g.appendChild(d);
+  });
+}
+
+/**
+ * Génère le formulaire HTML (accordéon) d'une participante.
+ * Chaque modification déclenche updateP() + save() via les onchange inline.
+ *
+ * @param {Object} p - Objet participante (avec p.presence)
+ * @returns {string} HTML du formulaire
+ */
+function pForm(p) {
+  const pr = p.presence || {};
+  return `<div class="field-group">
+    <div class="section-label">🚗 Arrivée vendredi</div>
+    <div class="field-row"><span class="field-label">Heure d'arrivée</span>${heureSelect(p.id,'heureArrivee',pr.heureArrivee||'')}</div>
+    <div class="field-row"><span class="field-label">J'arrive à</span>
+      <select class="field-input" onchange="updateP('${p.id}','lieuArrivee',this.value);save()">
+        <option value="jaujac" ${pr.lieuArrivee!=='resto'?'selected':''}>Au gîte (Jaujac)</option>
+        <option value="resto" ${pr.lieuArrivee==='resto'?'selected':''}>Directement au restaurant</option>
+      </select>
+    </div>
+    <div class="divider"></div>
+    <div class="section-label">🛵 Je roule comment ?</div>
+    <div class="radio-group">
+      ${rChip(p.id,'transport','mob','🛵 En mob (80€)')}
+      ${rChip(p.id,'transport','velo','🚲 En vélo élec (60€)')}
+      ${rChip(p.id,'transport','pattes','🚶 Avec mes pattes (0€)')}
+    </div>
+    <div class="divider"></div>
+    <div class="section-label">✅ Je participe à</div>
+    <div class="checkbox-group">
+      ${cChip(p.id,'resto','🍽️ Resto vend.')}
+      ${cChip(p.id,'brunchSamedi','🥞 Brunch sam.')}
+      ${cChip(p.id,'davidrachel','🏊 David & Rachel')}
+      ${cChip(p.id,'brunchDimanche','🥞 Brunch dim.')}
+      ${cChip(p.id,'barbecue','🔥 Barbecue dim.')}
+    </div>
+    <div class="divider"></div>
+    <div class="section-label">💆 Massage samedi</div>
+    <div class="radio-group">
+      ${rChip(p.id,'massage','','⛔ Non merci')}
+      ${rChip(p.id,'massage','37.5','½ heure — 37,50€')}
+      ${rChip(p.id,'massage','75','1 heure — 75€')}
+    </div>
+    <div class="divider"></div>
+    <div class="section-label">🚗 Mon départ</div>
+    <div class="field-row"><span class="field-label">Je pars le</span>
+      <select class="field-input" onchange="updateP('${p.id}','departJour',this.value);save()">
+        <option value="" ${!pr.departJour?'selected':''}>— choisir —</option>
+        <option value="samedi" ${pr.departJour==='samedi'?'selected':''}>Samedi</option>
+        <option value="dimanche" ${pr.departJour==='dimanche'?'selected':''}>Dimanche</option>
+      </select>
+    </div>
+    <div class="field-row"><span class="field-label">À quelle heure</span>${heureSelect(p.id,'departHeure',pr.departHeure||'')}</div>
+    <div class="divider"></div>
+    <div class="section-label">🧹 Ménage dimanche</div>
+    <div class="checkbox-group">
+      ${cChip(p.id,'menageApres16h','⏰ Ménage à partir de 16h')}
+    </div>
+    <div class="divider"></div>
+    <div class="section-label">📝 Notes</div>
+    <textarea class="note-textarea" placeholder="Allergie, régime, besoin spécial..." onchange="updateP('${p.id}','notes',this.value)">${pr.notes||''}</textarea>
+    <button class="btn-primary" onclick="save()">💾 Sauvegarder</button>
+  </div>`;
+}
+
+/**
+ * Génère un chip "checkbox" pour une option booléenne.
+ * La classe CSS .checked est appliquée si la valeur est true dans presence.
+ *
+ * @param {string} pid   - ID participante
+ * @param {string} key   - Clé dans presence
+ * @param {string} label - Texte affiché
+ * @returns {string} HTML du chip
+ */
+function cChip(pid, key, label) {
+  const ok = state.participantes.find(p=>p.id===pid)?.presence?.[key];
+  return `<div class="checkbox-chip ${ok?'checked':''}" onclick="toggleChip(this,'${pid}','${key}')">${label}</div>`;
+}
+
+/**
+ * Génère un chip "radio" pour une option à valeur unique.
+ * La classe CSS .selected est appliquée si la valeur courante correspond à val.
+ *
+ * @param {string} pid   - ID participante
+ * @param {string} key   - Clé dans presence
+ * @param {string} val   - Valeur représentée par ce chip
+ * @param {string} label - Texte affiché
+ * @returns {string} HTML du chip
+ */
+function rChip(pid, key, val, label) {
+  const cur = state.participantes.find(p=>p.id===pid)?.presence?.[key] ?? '';
+  return `<div class="radio-chip ${cur===val?'selected':''}" onclick="setRadio('${pid}','${key}','${val}')">${label}</div>`;
+}
+
+/**
+ * Déplie ou replie la carte d'une participante.
+ * @param {string} id - ID de la participante
+ */
+function toggleCard(id) { document.getElementById('pcard-'+id).classList.toggle('expanded'); }
+
+/**
+ * Bascule un booléen dans presence et met à jour le chip visuellement.
+ * @param {HTMLElement} el - L'élément chip cliqué
+ * @param {string} pid     - ID participante
+ * @param {string} key     - Clé dans presence
+ */
+function toggleChip(el, pid, key) {
+  const p = state.participantes.find(p=>p.id===pid);
+  p.presence[key] = !p.presence[key];
+  el.classList.toggle('checked', p.presence[key]);
+  save();
+}
+
+/**
+ * Sélectionne une valeur radio dans presence.
+ * Re-génère tout le formulaire pour refléter la nouvelle sélection
+ * (nécessaire car les chips radio sont liés à la valeur courante).
+ *
+ * @param {string} pid - ID participante
+ * @param {string} key - Clé dans presence
+ * @param {string} val - Nouvelle valeur
+ */
+function setRadio(pid, key, val) {
+  const p = state.participantes.find(p=>p.id===pid);
+  p.presence[key] = val;
+  document.getElementById('pdetails-'+pid).innerHTML = pForm(p); // Re-render du formulaire
+  save();
+}
+
+/**
+ * Met à jour une valeur dans presence sans re-rendre.
+ * Utilisée pour les <select> et <textarea> (onchange inline).
+ *
+ * @param {string} pid - ID participante
+ * @param {string} key - Clé dans presence
+ * @param {*}      val - Nouvelle valeur
+ */
+function updateP(pid, key, val) {
+  state.participantes.find(p=>p.id===pid).presence[key] = val;
+}
+
+
+// ================================================================
+// ONGLET FINANCES
+// ================================================================
+
+/**
+ * Retourne le coût du transport selon le type choisi.
+ * mob = 80€, velo = 60€, pattes = 0€.
+ *
+ * @param {string} t - Valeur de presence.transport
+ * @returns {number}
+ */
+function mobCost(t) { return t==='mob' ? 80 : t==='velo' ? 60 : 0; }
+
+/**
+ * Calcule le total dû par une participante (activités + extras menu).
+ *
+ * @param {Object} p - Objet participante
+ * @returns {number} Total en euros
+ */
+function calcTotal(p) {
+  const pr = p.presence || {};
+  let t = 0;
+  if (pr.resto) t += 29;
+  if (pr.davidrachel) t += 50;
+  t += mobCost(pr.transport);
+  if (pr.massage) t += Number(pr.massage);
+  // Extras du menu (plats commandés via l'onglet Menu)
+  const c = state.commandes[p.id] || {};
+  state.menu.forEach(item => { if (c[item.id]) t += Number(item.prix); });
+  return t;
+}
+
+/**
+ * Génère et insère le tableau des finances dans le DOM.
+ * Met à jour le résumé (total général, encaissé, reste).
+ * Appelée à chaque ouverture de l'onglet Finances.
+ */
+function renderFinances() {
+  const tb = document.getElementById('finance-tbody');
+  const sum = document.getElementById('finance-summary');
+  tb.innerHTML = '';
+  let grand=0, totalPaye=0, nbTotal=0;
+
+  state.participantes.forEach(p => {
+    const pr = p.presence || {};
+    if (!pr.paiements) pr.paiements = {};
+    const mc = mobCost(pr.transport);
+
+    // Définition des colonnes financières avec leur montant
+    const items = [
+      {key:'resto',   val: pr.resto       ? 29              : 0, label: pr.resto       ? '29 €'           : '—'},
+      {key:'dr',      val: pr.davidrachel ? 50              : 0, label: pr.davidrachel ? '50 €'           : '—'},
+      {key:'mob',     val: mc,                                    label: mc              ? mc+' €'         : '—'},
+      {key:'massage', val: pr.massage     ? Number(pr.massage):0, label: pr.massage    ? pr.massage+' €' : '—'},
+    ];
+
+    const total = items.reduce((s,i) => s + i.val, 0);
+    grand += total;
+
+    // Vérifie si tout est payé pour cette participante
+    const allPaid = items.every(i => i.val === 0 || pr.paiements[i.key]);
+    if (allPaid && total > 0) { totalPaye += total; nbTotal++; }
+
+    const tr = document.createElement('tr');
+
+    // Génère une cellule cliquable par poste de dépense
+    const cells = items.map(item => {
+      if (item.val === 0) return `<td><span class="fin-cell empty">—</span></td>`; // Pas de dépense : non cliquable
+      const paid = !!pr.paiements[item.key];
+      return `<td><span class="fin-cell ${paid?'paid':'unpaid'}" onclick="toggleCell('${p.id}','${item.key}')">${paid ? '✓ '+item.label : item.label}</span></td>`;
+    }).join('');
+
+    const totalPaid = items.every(i => i.val === 0 || pr.paiements[i.key]);
+    const totalClass = totalPaid && total > 0 ? 'paid' : 'unpaid';
+
+    // La cellule "Total" bascule tous les paiements d'un coup (toggleAllCells)
+    tr.innerHTML = `<td><strong>${p.nom.replace('🎂','').trim()}</strong></td>
+      ${cells}
+      <td><span class="fin-total ${totalClass}" onclick="toggleAllCells('${p.id}')">${totalPaid && total > 0 ? '✓ ' : ''}${total} €</span></td>`;
+    tb.appendChild(tr);
+  });
+
+  // Mise à jour du bandeau résumé
+  const r = grand - totalPaye;
+  sum.innerHTML = `<div class="finance-stat"><div class="stat-val">${grand} €</div><div class="stat-label">Total général</div></div>
+    <div class="finance-stat"><div class="stat-val">${totalPaye} €</div><div class="stat-label">Encaissé (${nbTotal}/${state.participantes.length})</div></div>
+    <div class="finance-stat"><div class="stat-val">${r} €</div><div class="stat-label">Reste à encaisser</div></div>`;
+}
+
+/**
+ * Bascule le statut payé/non-payé d'un poste de dépense.
+ * @param {string} pid - ID participante
+ * @param {string} key - Clé du poste ('resto', 'dr', 'mob', 'massage')
+ */
+function toggleCell(pid, key) {
+  const p = state.participantes.find(p=>p.id===pid);
+  if (!p.presence.paiements) p.presence.paiements = {};
+  p.presence.paiements[key] = !p.presence.paiements[key];
+  save(); renderFinances();
+}
+
+/**
+ * Bascule tous les postes de dépense d'une participante en un clic.
+ * Si tout est déjà payé, remet tout à non-payé (et vice-versa).
+ * @param {string} pid - ID participante
+ */
+function toggleAllCells(pid) {
+  const p = state.participantes.find(p=>p.id===pid);
+  const pr = p.presence || {};
+  if (!pr.paiements) pr.paiements = {};
+  const mc = mobCost(pr.transport);
+  const items = [
+    {key:'resto',   val: pr.resto       ? 29              : 0},
+    {key:'dr',      val: pr.davidrachel ? 50              : 0},
+    {key:'mob',     val: mc},
+    {key:'massage', val: pr.massage     ? Number(pr.massage) : 0},
+  ].filter(i => i.val > 0); // Ignorer les postes à 0€
+
+  const allPaid = items.every(i => pr.paiements[i.key]);
+  items.forEach(i => { pr.paiements[i.key] = !allPaid; }); // Toggle global
+  save(); renderFinances();
+}
+
+
+// ================================================================
+// ONGLET MENU (commandes extras)
+// ================================================================
+
+/**
+ * Ajoute un plat supplémentaire à la liste des extras.
+ * Lit les champs #menu-plat-nom et #menu-plat-prix.
+ * Génère un ID unique basé sur le timestamp.
+ */
+function addMenuItem() {
+  const n = document.getElementById('menu-plat-nom').value.trim();
+  const pr = parseFloat(document.getElementById('menu-plat-prix').value);
+  if (!n || isNaN(pr)) return;
+  state.menu.push({id: Date.now().toString(), nom:n, prix:pr});
+  document.getElementById('menu-plat-nom').value = '';
+  document.getElementById('menu-plat-prix').value = '';
+  save(); renderMenuList(); renderMenuCommandes();
+}
+
+/**
+ * Affiche la liste des extras ajoutés (avec bouton suppression).
+ */
+function renderMenuList() {
+  const l = document.getElementById('menu-items-list');
+  if (!l) return;
+  if (!state.menu.length) { l.innerHTML = ''; return; }
+  l.innerHTML = state.menu.map(i => `<div class="menu-item-row"><span>${i.nom}</span>
+    <span style="display:flex;align-items:center;gap:10px;"><span class="menu-prix">${i.prix} €</span>
+    <button onclick="removeMenuItem('${i.id}')" style="background:none;border:none;cursor:pointer;color:var(--rose-deep);font-size:16px;">✕</button></span></div>`).join('');
+}
+
+/**
+ * Supprime un extra du menu.
+ * @param {string} id - ID du plat (timestamp)
+ */
+function removeMenuItem(id) { state.menu = state.menu.filter(i=>i.id!==id); save(); renderMenuList(); renderMenuCommandes(); }
+
+/**
+ * Affiche les commandes extras par participante (chips cochables).
+ * Chaque participante peut cocher les extras qu'elle a commandés.
+ */
+function renderMenuCommandes() {
+  renderMenuList();
+  const c = document.getElementById('menu-commandes');
+  if (!c) return;
+  if (!state.menu.length) { c.innerHTML = '<p style="color:var(--text-soft);font-size:13px;">Ajoutez d\'abord des plats ci-dessus.</p>'; return; }
+  c.innerHTML = state.participantes.map(p => {
+    const cmds = state.commandes[p.id] || {};
+    const chips = state.menu.map(item => {
+      const ok = cmds[item.id];
+      return `<div class="checkbox-chip ${ok?'checked':''}" onclick="toggleCmd('${p.id}','${item.id}',this)">${item.nom} (+${item.prix}€)</div>`;
+    }).join('');
+    return `<div style="margin-bottom:14px;"><div style="font-weight:600;font-size:13px;margin-bottom:6px;">${p.nom.replace('🎂','').trim()}</div><div class="checkbox-group">${chips}</div></div>`;
+  }).join('<div style="height:1px;background:var(--warm);margin:10px 0;"></div>');
+}
+
+/**
+ * Bascule une commande d'extra pour une participante.
+ * @param {string}      pid - ID participante
+ * @param {string}      iid - ID du plat extra
+ * @param {HTMLElement} el  - Le chip cliqué
+ */
+function toggleCmd(pid, iid, el) {
+  if (!state.commandes[pid]) state.commandes[pid] = {};
+  state.commandes[pid][iid] = !state.commandes[pid][iid];
+  el.classList.toggle('checked', state.commandes[pid][iid]);
+  save();
+}
+
+
+// ================================================================
+// ONGLET MÉNAGE
+// ================================================================
+
+/**
+ * Génère et insère la grille des inscriptions au ménage.
+ * Met à jour le récapitulatif des inscrits.
+ * Appelée à chaque ouverture de l'onglet Ménage.
+ */
+function renderMenage() {
+  const g = document.getElementById('menage-grid');
+  g.innerHTML = state.participantes.map(p => {
+    const pr = p.presence || {};
+    const ins = !!pr.menage;
+    const a16 = !!pr.menageApres16h;
+    return `<div class="menage-card ${ins?'inscrite':''}">
+      <div><div class="menage-nom">${p.nom.replace('🎂','').trim()}</div>
+      ${a16&&ins?'<div class="menage-sub">⏰ disponible à partir de 16h</div>':''}</div>
+      <button class="menage-toggle ${ins?'oui':'non'}" onclick="toggleMenage('${p.id}')">${ins?'✓ Inscrite':'M\'inscrire'}</button>
+    </div>`;
+  }).join('');
+
+  // Récapitulatif textuel des inscrits
+  const ins = state.participantes.filter(p => p.presence?.menage);
+  const s = document.getElementById('menage-summary');
+  if (!ins.length) { s.innerHTML = '<em>Personne d\'inscrite pour l\'instant…</em>'; return; }
+  s.innerHTML = `<strong>${ins.length} participante${ins.length>1?'s':''} inscrite${ins.length>1?'s':''} :</strong><br><br>`
+    + ins.map(p => `• ${p.nom.replace('🎂','').trim()}${p.presence?.menageApres16h?' <span style="font-size:11px;color:#888;">(à partir de 16h)</span>':''}`).join('<br>');
+}
+
+/**
+ * Bascule l'inscription d'une participante au ménage.
+ * Utilise XOR binaire (^= 1) pour basculer entre 0 et 1.
+ * @param {string} pid - ID participante
+ */
+function toggleMenage(pid) {
+  state.participantes.find(p=>p.id===pid).presence.menage ^= 1;
+  save(); renderMenage();
+}
+
+
+// ================================================================
+// ONGLET CHECKLIST "À EMPORTER"
+// ================================================================
+
+/**
+ * Génère et insère la checklist de bagages dans le DOM.
+ * L'état coché/décoché vient de state.checklist[item].
+ */
+function renderChecklist() {
+  document.getElementById('checklist').innerHTML = CHECKLIST_ITEMS.map(item => {
+    const done = state.checklist[item];
+    return `<div class="checklist-item ${done?'done':''}" onclick="toggleCheck('${item}',this)"><span class="check-icon">${done?'✅':'⬜'}</span>${item}</div>`;
+  }).join('');
+}
+
+/**
+ * Coche ou décoche un item de la liste "À emporter".
+ * @param {string}      item - Nom de l'item (clé dans state.checklist)
+ * @param {HTMLElement} el   - L'élément cliqué
+ */
+function toggleCheck(item, el) {
+  state.checklist[item] = !state.checklist[item];
+  el.classList.toggle('done', state.checklist[item]);
+  el.querySelector('.check-icon').textContent = state.checklist[item] ? '✅' : '⬜';
+  save();
+}
+
+/**
+ * Décoche tous les items de la liste "À emporter".
+ */
+function resetChecklist() { state.checklist = {}; renderChecklist(); save(); }
+
+
+// ================================================================
+// NOTES GÉNÉRALES
+// ================================================================
+
+/**
+ * Sauvegarde les notes générales depuis le textarea #notes-generales.
+ * Déclenchée manuellement via le bouton "Sauvegarder les notes".
+ */
+function saveNotes() { state.notes = document.getElementById('notes-generales').value; save(); }
+
+
+// ================================================================
+// INITIALISATION
+// ================================================================
+
+/**
+ * Point d'entrée de l'application.
+ * Charge les données Firebase puis déclenche tous les rendus initiaux.
+ */
+function init() {
+  loadFromFirebase();
+}
+init();
+
+</script>
+</body>
+</html>
